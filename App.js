@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import { Container, Header, Content, Form, Item, Input, Label, Button } from 'native-base';
+import Login from './Components/Login';
+import Main from './Components/Main';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -13,82 +14,37 @@ export default class App extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
-      loggedIn: false
+      loggedIn: false,
+      username: '',
+      password: '',
+      display: ''
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  handleSubmit() {
+  handleSubmit(name) {
     this.setState({
-      loggedIn: true
+      loggedIn: true,
+    });
+  }
+
+  handleChange(value, name) {
+    this.setState({
+      [name]: value
     });
   }
 
   render() {
     if (this.state.loggedIn) {
-      return (<Text>Done with Sign up</Text>);
+      return (<Main
+        username={this.state.username}
+        display={this.state.display}/>);
     } else {
-      return (<Login handleSubmit={this.handleSubmit}/>);
+      return (<Login
+        handleSubmit={this.handleSubmit}
+        handleChange={this.handleChange}
+        />);
     }
   }
 }
-
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      password: '',
-    };
-  }
-  render() {
-    return (
-      <Container>
-        <Header/>
-        <Content>
-          <Form>
-            <Item floatingLabel>
-              <Label>Username</Label>
-              <Input
-                autoCorrect={false}
-                autoCapitalize="none"
-                onChange={(username) => this.setState({username})}
-              />
-            </Item>
-            <Item floatingLabel last>
-              <Label>Password</Label>
-              <Input
-                secureTextEntry={true}
-                onChange={(password) => this.setState({password})}
-              />
-            </Item>
-            <Button full dark
-              onPress={() => this.props.handleSubmit()}>
-            <Text style={styles.login}>Login</Text>
-          </Button>
-          </Form>
-        </Content>
-      </Container>
-    );
-  }
-}
-
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#FFF',
-    color: '#A8C73F',
-  },
-  login: {
-    color: '#A8C73F',
-    fontWeight: 'bold',
-  },
-  header: {
-    color: '#A8C73F',
-    backgroundColor: '#000000',
-    fontWeight: 'bold',
-  }
-});
