@@ -3,13 +3,37 @@ import { Container, Header, Content, Title, Text, Button, Icon, Left, Body, Righ
 import DisplayCard from './DisplayCard';
 import ImagePicker from 'react-native-image-picker';
 import { AppRegistry, StyleSheet, View, PixelRatio, TouchableOpacity, Image } from 'react-native';
+import * as firebase from 'firebase';
 
 export default class Main extends Component<{}> {
   constructor(props) {
+    let user = firebase.auth().currentUser;
     super(props);
     this.state = {
-      picSource: null
+      picSource: null,
+      id: user.uid
     };
+    this.writeNewPhoto = this.writeNewPhoto.bind(this);
+    this.selectPhotoTapped = this.selectPhotoTapped.bind(this);
+  }
+
+  writeNewPhoto(uid, name, picture) {
+    let photoData = {
+      author: name,
+      uid: uid,
+      likesCount: 0,
+      picture: picture
+    };
+
+    // Get a key for a new Post.
+    let newPhotoKey = firebase.database().ref().child('photos').push().key;
+
+    // Write the new post's data simultaneously in the posts list and the user's post list.
+    let updates = {};
+    updates[`/photos/'${newPhotoKey}`] = photoData;
+    updates[`/users/'${uid}`] = photoData;
+
+    return firebase.database().ref().update(updates);
   }
 
   selectPhotoTapped() {
@@ -35,14 +59,13 @@ export default class Main extends Component<{}> {
         console.log('User tapped custom button: ', response.customButton);
       }
       else {
-        let source = { uri: response.uri };
-
-        // You can also display the image using data:
-        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        let storageRef = firebase.storage().ref();
+        let base64Source = {uri: `data:image/jpeg;base64,${response.data}`};
 
         this.setState({
-          picSource: source
+          picSource: base64Source
         });
+        this.writeNewPhoto(this.state.id, this.props.display, response.data);
       }
     });
   }
@@ -61,7 +84,6 @@ export default class Main extends Component<{}> {
           <DisplayCard
           pic={this.state.picSource}
           display={this.props.display}
-          username={this.props.username}
           />
         </Content>
         <Footer>

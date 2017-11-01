@@ -14,7 +14,6 @@ export default class DisplayCard extends Component<{}> {
             <Icon name='person' />
             <Body>
               <Text>{this.props.display}</Text>
-              <Text note>{this.props.username}</Text>
             </Body>
           </Left>
         </CardItem>

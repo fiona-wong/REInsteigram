@@ -26,11 +26,11 @@ export default class Login extends Component<{}> {
               />
             </Item>
             <Item floatingLabel>
-              <Label>Username</Label>
+              <Label>E-Mail</Label>
               <Input
                 autoCorrect={false}
                 autoCapitalize="none"
-                onChangeText={(username) => this.props.handleChange(username, "username")}
+                onChangeText={(email) => this.props.handleChange(email, "email")}
               />
             </Item>
             <Item floatingLabel last>
