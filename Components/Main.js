@@ -11,7 +11,8 @@ export default class Main extends Component<{}> {
     super(props);
     this.state = {
       picSource: null,
-      id: user.uid
+      id: user.uid,
+      probability: null
     };
     this.writeNewPhoto = this.writeNewPhoto.bind(this);
     this.selectPhotoTapped = this.selectPhotoTapped.bind(this);
@@ -25,13 +26,13 @@ export default class Main extends Component<{}> {
       picture: picture
     };
 
-    // Get a key for a new Post.
+    // Get a key for a new Photo.
     let newPhotoKey = firebase.database().ref().child('photos').push().key;
 
-    // Write the new post's data simultaneously in the posts list and the user's post list.
+    // Write the new photo's data simultaneously in the photos list and the user's photo list.
     let updates = {};
     updates[`/photos/'${newPhotoKey}`] = photoData;
-    updates[`/users/'${uid}`] = photoData;
+    updates[`/user-photos/'${uid}/${newPhotoKey}`] = photoData;
 
     return firebase.database().ref().update(updates);
   }
@@ -65,6 +66,31 @@ export default class Main extends Component<{}> {
         this.setState({
           picSource: base64Source
         });
+
+        //convert data to form data as the acceptable request body
+        let form_data = new FormData();
+        form_data.append('modelId', 'VUAMRM3AOOQGP2SS6EGRSVHN3M');
+        form_data.append('sampleBase64Content', response.data);
+
+
+
+        fetch('https://api.einstein.ai/v2/vision/predict', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer OC6A527QGYDS5DNYOY7Z3CACV466RRDUVHWKFW3FJRUC7CTZQGMHDUXSNOG7NBLTU6OKR2TLAMU5KIQHWUQIKO4ZWI6HSPGQGL4NMCY',
+            'Content-Type': 'multipart/form-data',
+            'Cache-Control': 'no-cache'
+          },
+          body: form_data
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          this.setState({
+            probability: responseJson.probabilities
+          })
+        })
+        .catch(err => console.log(err));
+
         this.writeNewPhoto(this.state.id, this.props.display, response.data);
       }
     });
