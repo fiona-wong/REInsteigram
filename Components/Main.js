@@ -20,6 +20,8 @@ export default class Main extends Component<{}> {
       photos: null,
       probabilities: null,
       productActive: true,
+      imagePreview: false,
+      exploreActive: false
     };
     this.writeNewPhoto = this.writeNewPhoto.bind(this);
     this.selectPhotoTapped = this.selectPhotoTapped.bind(this);
@@ -32,13 +34,17 @@ export default class Main extends Component<{}> {
 
   setExplore() {
     this.setState({
-      productActive: false
+      productActive: false,
+      imagePreview: false,
+      exploreActive: true
     })
   }
 
   setProduct() {
     this.setState({
-      productActive: true
+      productActive: true,
+      imagePreview: false,
+      exploreActive: false
     })
   }
 
@@ -139,7 +145,10 @@ export default class Main extends Component<{}> {
       else {
         let base64Source = {uri: `data:image/jpeg;base64,${response.data}`};
         this.setState({
-          picSource: base64Source
+          picSource: base64Source,
+          productActive: false,
+          imagePreview: true,
+          exploreActive: false
         });
         this.handleEinstein(response.data);
       }
@@ -150,7 +159,16 @@ export default class Main extends Component<{}> {
     return (
       <Container>
         <MainHeader/>
-          {this.state.productActive ? <ProductsPage/> : <ExplorePage/>}
+        {this.state.imagePreview ? <Content>
+                  <DisplayCard
+                    url={null}
+                    pic={this.state.picSource}
+                    display={this.props.display}
+                    resize={null}
+                    />
+                </Content> : null }
+        {this.state.productActive ? <ProductsPage/> : null}
+        {this.state.exploreActive ? <ExplorePage/> : null}
         <MainFooter
           setProduct={this.setProduct}
           setExplore={this.setExplore}
