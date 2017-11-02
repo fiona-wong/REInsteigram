@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Header, Content, Title, Text, Button, Icon, Left, Body, Right, Footer, FooterTab } from 'native-base';
+import { Content } from 'native-base';
 import DisplayCard from './DisplayCard';
-import ImagePicker from 'react-native-image-picker';
-import { AppRegistry, StyleSheet, View, PixelRatio, TouchableOpacity, Image, StyleProvider } from 'react-native';
 import * as firebase from 'firebase';
 import { productData } from './productsdata';
 
@@ -46,6 +44,7 @@ export default class ProductsPage extends Component<{}> {
             key={key}
             pic={{uri: product.image}}
             display={"REI - Click for Details"}
+            resize="contain"
             />
         ))}
       </Content>

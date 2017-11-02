@@ -8,6 +8,7 @@ import { productData } from './productsdata';
 import MainHeader from './MainHeader';
 import MainFooter from './MainFooter';
 import ProductsPage from './ProductsPage';
+import ExplorePage from './ExplorePage';
 
 export default class Main extends Component<{}> {
   constructor(props) {
@@ -149,7 +150,7 @@ export default class Main extends Component<{}> {
     return (
       <Container>
         <MainHeader/>
-          {this.state.productActive ? <ProductsPage/> : null}
+          {this.state.productActive ? <ProductsPage/> : <ExplorePage/>}
         <MainFooter
           setProduct={this.setProduct}
           setExplore={this.setExplore}

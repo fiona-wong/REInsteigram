@@ -1,42 +1,65 @@
 import React, { Component } from 'react';
-import { Container, Header, Content, Title, Text, Button, Icon, Left, Body, Right, Footer, FooterTab } from 'native-base';
+import { Content } from 'native-base';
 import DisplayCard from './DisplayCard';
-import ImagePicker from 'react-native-image-picker';
-import { AppRegistry, StyleSheet, View, PixelRatio, TouchableOpacity, Image, StyleProvider } from 'react-native';
 import * as firebase from 'firebase';
-import { productData } from './productsdata';
 
 export default class ExplorePage extends Component<{}> {
   constructor(props) {
     super(props);
     let user = firebase.auth().currentUser;
     this.state = {
-      probabilities: null,
-      pictures: [],
-      userId: user.uid
+      photos: [],
+      userId: user.uid,
+      highestlabel: null,
+      highestProb: 0
     }
+    this.filterPhotos = this.filterPhotos.bind(this);
   }
 
   componentDidMount() {
-    let userRef = firebase.database().ref('users');
-    userRef.on(`${this.state.userId}`, (snapshot) => {
-      this.setState({
-        probabilities: snapshot.val()
+    let userRef = firebase.database().ref(`users/${this.state.userId}`);
+    userRef.once('value', (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        let childKey = childSnapshot.key;
+        let childData = childSnapshot.val();
+        if (childData > this.state.highestProb && childKey !== 'photoCount') {
+          this.setState({
+            highestlabel: childKey,
+            highestProb: childData,
+          })
+        }
       });
-    }, (errorObject) => {
-      console.log("The read failed: " + errorObject.code);
+    })
+    .then(() => {
+      this.filterPhotos();
+    })
+  }
+
+  filterPhotos() {
+    let photoRef = firebase.database().ref('photos');
+    photoRef.once('value', (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        let childKey = childSnapshot.key;
+        let childData = childSnapshot.val();
+        if (childData.label === this.state.highestlabel || this.state.highestLabel === null) {
+          this.setState({
+            photos: this.state.photos.concat([childData])
+          })
+        }
+      });
     });
   }
 
   render() {
     return (
       <Content>
-        {this.state.products.map((product, key) => (
+        {this.state.photos.map((photo, key) => (
           <DisplayCard
-            url={product.link}
+            url={null}
             key={key}
-            pic={{uri: product.image}}
-            display={"REI - Click for Details"}
+            pic={{uri: `data:image/jpeg;base64,${photo.picture}`}}
+            display={photo.author}
+            resize={null}
             />
         ))}
       </Content>

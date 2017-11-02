@@ -32,7 +32,7 @@ export default class DisplayCard extends Component<{}> {
           </Left>
         </CardItem>
         <CardItem cardBody>
-          <Image source={this.props.pic ? this.props.pic : require('./cabin.jpg')} style={{height: 200, width: null, flex: 1, resizeMode: 'contain'}}/>
+          <Image source={this.props.pic ? this.props.pic : require('./cabin.jpg')} style={{height: 200, width: null, flex: 1, resizeMode: this.props.resize}}/>
         </CardItem>
         <CardItem>
           <Left>
