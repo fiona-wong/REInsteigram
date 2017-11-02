@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { Container, Header, Content, Title, Text, Button, Icon, Left, Body, Right, Footer, FooterTab } from 'native-base';
+import { Container, Content, Button } from 'native-base';
 import DisplayCard from './DisplayCard';
 import ImagePicker from 'react-native-image-picker';
-import { AppRegistry, StyleSheet, View, PixelRatio, TouchableOpacity, Image } from 'react-native';
+import { AppRegistry, StyleSheet, View, PixelRatio, TouchableOpacity, Image, StyleProvider } from 'react-native';
 import * as firebase from 'firebase';
+import { productData } from './productsdata';
+import MainHeader from './MainHeader';
+import MainFooter from './MainFooter';
+import ProductsPage from './ProductsPage';
 
 export default class Main extends Component<{}> {
   constructor(props) {
@@ -12,16 +16,32 @@ export default class Main extends Component<{}> {
     this.state = {
       picSource: null,
       id: user.uid,
-      probability: null,
-      photo: null
+      photos: null,
+      probabilities: null,
+      productActive: true,
     };
     this.writeNewPhoto = this.writeNewPhoto.bind(this);
     this.selectPhotoTapped = this.selectPhotoTapped.bind(this);
     this.updatePhotoCount = this.updatePhotoCount.bind(this);
     this.handleEinstein = this.handleEinstein.bind(this);
     this.updatePhotoProb = this.updatePhotoProb.bind(this);
+    this.setExplore = this.setExplore.bind(this);
+    this.setProduct = this.setProduct.bind(this);
   }
 
+  setExplore() {
+    this.setState({
+      productActive: false
+    })
+  }
+
+  setProduct() {
+    this.setState({
+      productActive: true
+    })
+  }
+
+  //added photo probabilities to user
   updatePhotoProb(probabilities, uid, photoCount) {
     probabilities.forEach(probability => {
       let userLabelRef = firebase.database().ref(`users/${uid}/${probability.label}`);
@@ -31,7 +51,7 @@ export default class Main extends Component<{}> {
     });
   }
 
-  //updates users analysis in the database
+  //updates photo count in the database
   updatePhotoCount(probabilities, uid) {
     let userPhotoCountRef = firebase.database().ref(`users/${uid}/photoCount`);
     return userPhotoCountRef.transaction(currentPhotoCount => {
@@ -50,7 +70,8 @@ export default class Main extends Component<{}> {
       uid: uid,
       likesCount: 0,
       picture: picture,
-      probabilities: probabilities
+      probabilities: probabilities,
+      label: probabilities[0]['label']
     };
 
     // Get a key for a new Photo.
@@ -127,56 +148,13 @@ export default class Main extends Component<{}> {
   render() {
     return (
       <Container>
-        <Header>
-          <Left/>
-          <Body>
-            <Title>REInsteigram</Title>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <DisplayCard
-          pic={this.state.picSource}
-          display={this.props.display}
-          />
-        </Content>
-        <Footer>
-          <FooterTab>
-            <Button vertical>
-              <Icon name="apps" />
-              <Text>Home</Text>
-            </Button>
-            <Button vertical onPress={this.selectPhotoTapped.bind(this)}>
-              <Icon name="camera" />
-              <Text>Camera</Text>
-            </Button>
-            <Button vertical>
-              <Icon name="person" />
-              <Text>Contact</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
+        <MainHeader/>
+          {this.state.productActive ? <ProductsPage/> : null}
+        <MainFooter
+          setProduct={this.setProduct}
+          setExplore={this.setExplore}
+          selectPhotoTapped={this.selectPhotoTapped}/>
       </Container>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000'
-  },
-  avatarContainer: {
-    borderColor: '#A8C73F',
-    borderWidth: 1 / PixelRatio.get(),
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  avatar: {
-    borderRadius: 75,
-    width: 150,
-    height: 150
-  }
-});

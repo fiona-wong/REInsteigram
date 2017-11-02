@@ -6,25 +6,34 @@ import { AppRegistry, StyleSheet, View, PixelRatio, TouchableOpacity, Image, Sty
 import * as firebase from 'firebase';
 import { productData } from './productsdata';
 
-export default class ExplorePage extends Component<{}> {
+export default class ProductsPage extends Component<{}> {
   constructor(props) {
     super(props);
     let user = firebase.auth().currentUser;
     this.state = {
-      probabilities: null,
-      pictures: [],
-      userId: user.uid
+      products: productData.slice(0, 50),
+      userId: user.uid,
+      highestlabel: null,
+      highestProb: 0
     }
   }
 
   componentDidMount() {
-    let userRef = firebase.database().ref('users');
-    userRef.on(`${this.state.userId}`, (snapshot) => {
-      this.setState({
-        probabilities: snapshot.val()
+    let userRef = firebase.database().ref(`users/${this.state.userId}`);
+    userRef.once('value', (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        let childKey = childSnapshot.key;
+        let childData = childSnapshot.val();
+        if (childData > this.state.highestProb && childKey !== 'photoCount') {
+          this.setState({
+            highestlabel: childKey,
+            highestProb: childData,
+            products: productData.filter(product => {
+              return product.label === childKey;
+            })
+          })
+        }
       });
-    }, (errorObject) => {
-      console.log("The read failed: " + errorObject.code);
     });
   }
 

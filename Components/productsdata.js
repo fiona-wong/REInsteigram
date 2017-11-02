@@ -1,4 +1,4 @@
-{"productswithlabel": [
+const productData = [
 	{
 		"image": "https://www.rei.com/media/product/109117?size=300",
 		"link": "https://www.rei.com/rei-garage/product/109117/arcteryx-acrux-fl-gtx-approach-shoes-mens",
@@ -1884,4 +1884,6 @@
 		"link": "https://www.rei.com/rei-garage/product/898762/black-diamond-cosmo-headlamp",
 		"label": "CampHike"
 	}
-]}
+]
+
+export {productData};
