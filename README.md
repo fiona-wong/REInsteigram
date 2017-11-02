@@ -8,9 +8,13 @@ Application was developed and tested on Macbook and iPhone
 
 Install xcode to run simulator
 
+Make sure to have react-native cli installed globally by running command npm install -g react-native-cli
+
 run npm install to get all dependencies
 
 react-native run-ios to start running application on simulator
+
+to login make sure password longer than 8 characters
 
 ## API Reference
 

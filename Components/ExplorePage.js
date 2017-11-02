@@ -41,7 +41,12 @@ export default class ExplorePage extends Component<{}> {
       snapshot.forEach((childSnapshot) => {
         let childKey = childSnapshot.key;
         let childData = childSnapshot.val();
-        if (childData.label === this.state.highestlabel || this.state.highestLabel === null) {
+        if (childData.label === this.state.highestlabel) {
+          this.setState({
+            photos: this.state.photos.concat([childData])
+          })
+        }
+        if (!this.state.highestlabel) {
           this.setState({
             photos: this.state.photos.concat([childData])
           })
