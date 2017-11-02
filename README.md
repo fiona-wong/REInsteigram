@@ -25,3 +25,7 @@ https://firebase.google.com/docs/reference/js/
 Information on Einstein API and how to use it:
 
 https://metamind.readme.io/docs/what-you-need-to-call-api
+
+## Demo
+
+Youtube Video: https://youtu.be/I1VN3zu3_kw
